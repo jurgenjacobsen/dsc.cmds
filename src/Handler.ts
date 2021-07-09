@@ -6,6 +6,7 @@ export class Handler extends Base {
     public bot: Client | any;
     constructor(bot: Client | any, options: HandlerOptions) {
         super(options);
+        this.bot = bot;
     }
 
     public async interaction(i: Interaction): Promise<boolean> {
