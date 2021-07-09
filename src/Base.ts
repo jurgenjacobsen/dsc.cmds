@@ -112,20 +112,6 @@ export class Base extends EventEmitter {
         })
     }
 
-    /**
-     * Emitted on debug mode
-     * @event Base#debug
-     * @param {string} Message Debug message
-     * @example <Handler>.on("debug", console.log)
-     */
-
-    /**
-     * Emitted the handler encounters errors
-     * @event Base#error
-     * @param {string} Message Error message
-     * @example <Handler>.on("error", console.error)
-     */
-
 }
 
 export class Command {
