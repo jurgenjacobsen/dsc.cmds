@@ -47,7 +47,6 @@ export class Base extends EventEmitter {
     }
 
     public run(command: Command, bot: Client | any, interaction: CommandInteraction) {
-        console.log(bot);
         try {
             this._runCommand(command, bot, interaction);
             return true;
@@ -58,7 +57,6 @@ export class Base extends EventEmitter {
     }
 
     private async _runCommand(command: Command, bot: Client | any, interaction: CommandInteraction): Promise<any | void | boolean> {
-        console.log(bot);
         let cooldownKey = `${command.name}_${interaction.user.id}`;
 
         if(this._cooldowns.has(cooldownKey)) {
