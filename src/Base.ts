@@ -73,7 +73,6 @@ export class Base extends EventEmitter {
             }
         }
 
-        interaction.defer({ephemeral: command.ephemeral});
         command.execute(bot, interaction);
 
         this._cooldown(cooldownKey, command.cooldown || 0);
