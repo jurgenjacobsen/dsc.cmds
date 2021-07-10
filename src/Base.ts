@@ -22,10 +22,6 @@ export class Base extends EventEmitter {
                 wrongChannel: (opt.errorMessages?.wrongChannel?.length as number) > 1 ? opt.errorMessages?.wrongChannel : `You're on the wrong channel to use this command!`,
             }
         };
-
-        this.on("command", (cmd, bot, i) => {
-            this._runCommand(cmd, bot, i);
-        });
     }
 
     get commands(): Commands {
@@ -46,17 +42,7 @@ export class Base extends EventEmitter {
         return cmd;
     }
 
-    public run(command: Command, bot: Client | any, interaction: CommandInteraction) {
-        try {
-            this._runCommand(command, bot, interaction);
-            return true;
-        } catch(err) {
-            this.emit("debug", `A error ocurred on the command ${command.name}`);
-            throw new Error(err);
-        }
-    }
-
-    private async _runCommand(command: Command, bot: Client | any, interaction: CommandInteraction): Promise<any | void | boolean> {
+    public async run(command: Command, bot: Client | any, interaction: CommandInteraction): Promise<any | void | boolean> {
         let cooldownKey = `${command.name}_${interaction.user.id}`;
 
         if(this._cooldowns.has(cooldownKey)) {
