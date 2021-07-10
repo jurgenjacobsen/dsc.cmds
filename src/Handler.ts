@@ -7,6 +7,7 @@ export class Handler extends Base {
     constructor(bot: Client | any, options: HandlerOptions) {
         super(options);
         this.bot = bot;
+        this.load();
     }
 
     public async interaction(i: Interaction): Promise<boolean> {
@@ -20,7 +21,7 @@ export class Handler extends Base {
         return true;
     }
 
-    public async load() {
+    private async load() {
         for(const file of readdirSync(this.options.commandsDir)) {
             const { command } = require(`${this.options.commandsDir}/${file}`);
             this.add(command);
