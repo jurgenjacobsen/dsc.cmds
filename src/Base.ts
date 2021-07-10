@@ -3,12 +3,12 @@ import EventEmitter from "events";
 
 export class Base extends EventEmitter {
     private _commands: Commands;
-    private _cooldowns: Cooldowns;
+    public cooldowns: Cooldowns;
     public options: HandlerOptions;
     constructor(opt: HandlerOptions) {
         super();
         this._commands = new Collection();
-        this._cooldowns = new Collection();
+        this.cooldowns = new Collection();
         this.options = {
             commandsDir: opt.commandsDir,
             errorMessageEph: typeof opt.errorMessageEph === "boolean" ? opt.errorMessageEph : false,
@@ -22,76 +22,36 @@ export class Base extends EventEmitter {
                 wrongChannel: (opt.errorMessages?.wrongChannel?.length as number) > 1 ? opt.errorMessages?.wrongChannel : `You're on the wrong channel to use this command!`,
             }
         };
-    }
+    };
 
     get commands(): Commands {
         return this._commands;
     }
 
-    public async add(opt: CommandOptions): Promise<Command | boolean> {
+    public add(opt: CommandOptions): Command | boolean {
         let cmd = new Command(opt);
         if(!cmd) return this.emit("debug", "Error while loading command...");
         this.commands.set(cmd.name, cmd);
         return cmd;
     }
 
-    public async remove(commandName: string): Promise<Command | boolean> {
+    public remove(commandName: string): Command | boolean {
         let cmd = this.commands.get(commandName);
         if(!cmd) return this.emit("debug", "Error while removing a command...");
         this.commands.delete(commandName);
         return cmd;
     }
 
-    public async run(command: Command, bot: Client | any, interaction: CommandInteraction): Promise<any | void | boolean> {
-        let cooldownKey = `${command.name}_${interaction.user.id}`;
-
-        if(this._cooldowns.has(cooldownKey)) {
-            return interaction.reply({ content: this.options.errorMessages?.cooldown, ephemeral: this.options.errorMessageEph });
-        }
-
-        if(command.guildOnly && !interaction.guild) {
-            return interaction.reply({ content: this.options.errorMessages?.guildOnly, ephemeral: this.options.errorMessageEph });
-        }
-
-        if(command.staffOnly) {
-            if(!command.guildOnly) throw new Error("StaffOnly command should be also set to be GuildOnly!");
-            if(!interaction.guild) return interaction.reply({content: this.options.errorMessages?.guildOnly, ephemeral: this.options.errorMessageEph});
-            let member = await interaction.guild.members.fetch(interaction.user.id);
-            if(!this.options.staffRoles?.includes(member.roles.highest.id)) {
-                return interaction.reply({ content: this.options.errorMessages?.staffOnly, ephemeral: this.options.errorMessageEph })
-            }
-        }
-
-        if(command.developerOnly) {
-            if(this.options.developersIDs?.length !> 0) throw new Error("You should define at least one Developer ID to use DeveloperOnly commands!");
-            if(!this.options.developersIDs?.includes(interaction.user.id)) return interaction.reply({ content: this.options.errorMessages?.developerOnly, ephemeral: this.options.errorMessageEph });
-        }
-
-        if((command.allowedChannels?.length as number) > 0 || (command.deniedChannels?.length as number) > 0) {
-            if(!command.allowedChannels?.includes(interaction.channelId) || command.deniedChannels?.includes(interaction.channelId)) {
-                return interaction.reply({ content: this.options.errorMessages?.wrongChannel, ephemeral: true });
-            }
-        }
-
-        command.execute(bot, interaction);
-
-        this._cooldown(cooldownKey, command.cooldown || 0);
-
-        this.emit("debug", `Command ${command.name} has been ran!`);
-
-        return true;
-    }
-
-    private _cooldown(key: string, time: number) {
+    public _cooldown(key: string, time: number) {
         if(typeof time !== "number") throw new Error("Cooldown option should be type number!");
         this.emit("debug", `${time}s cooldown added to ${key}`);
-        this._cooldowns.set(key, time);
+        this.cooldowns.set(key, time);
         let i = setInterval(() => {
             if(time !== 0) {
                 --time;
-                this._cooldowns.set(key, time);
+                this.cooldowns.set(key, time);
             } else {
-                this._cooldowns.delete(key)
+                this.cooldowns.delete(key)
                 clearInterval(i);
             }
         })
