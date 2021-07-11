@@ -1,5 +1,6 @@
-import { Client, Collection, CommandInteraction, Snowflake } from "discord.js";
+import { Collection, Snowflake } from "discord.js";
 import EventEmitter from "events";
+import { CommandOptions, HandlerOptions, CommandExecute } from "./CommandHandler";
 
 export class Base extends EventEmitter {
     private _commands: Commands;
@@ -89,34 +90,3 @@ export class Command {
 export type Cooldowns = Collection<string, number>;
 export type Commands = Collection<CommandName, Command>;
 export type CommandName = string;
-
-export interface CommandExecute {
-    (bot: Client | any, interaction: CommandInteraction): Promise<void | any | undefined | null>;
-}
-
-export interface CommandOptions {
-    name: string,
-    guildOnly?: boolean,
-    staffOnly?: boolean,
-    developerOnly?: boolean,
-    allowedChannels?: Snowflake[],
-    deniedChannels?: Snowflake[],
-    cooldown?: number,
-    ephemeral?: boolean,
-    maintence?: boolean,
-    execute: CommandExecute,
-}
-
-export interface HandlerOptions {
-    commandsDir: string,
-    errorMessageEph?: boolean,
-    staffRoles?: Snowflake[],
-    developersIDs?: Snowflake[],
-    errorMessages?: {
-        cooldown?: string,
-        guildOnly?: string,
-        staffOnly?: string,
-        developerOnly?: string,
-        wrongChannel?: string,
-    }
-}

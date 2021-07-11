@@ -1,8 +1,8 @@
-import { Client, CommandInteraction, Interaction } from "discord.js";
-import { Base, Command, HandlerOptions } from "./Base";
+import { Client, CommandInteraction, Interaction, Snowflake } from "discord.js";
+import { Base, Command } from "./Base";
 import { readdirSync } from "fs";
 
-export class Handler extends Base {
+export class CommandHandler extends Base {
     public bot: Client | any;
     constructor(bot: Client | any, options: HandlerOptions) {
         super(options);
@@ -69,4 +69,35 @@ export class Handler extends Base {
         return true;
     }
 
+}
+
+export interface CommandExecute {
+    (bot: Client | any, interaction: CommandInteraction): Promise<void | any | undefined | null>;
+}
+
+export interface CommandOptions {
+    name: string,
+    guildOnly?: boolean,
+    staffOnly?: boolean,
+    developerOnly?: boolean,
+    allowedChannels?: Snowflake[],
+    deniedChannels?: Snowflake[],
+    cooldown?: number,
+    ephemeral?: boolean,
+    maintence?: boolean,
+    execute: CommandExecute,
+}
+
+export interface HandlerOptions {
+    commandsDir: string,
+    errorMessageEph?: boolean,
+    staffRoles?: Snowflake[],
+    developersIDs?: Snowflake[],
+    errorMessages?: {
+        cooldown?: string,
+        guildOnly?: string,
+        staffOnly?: string,
+        developerOnly?: string,
+        wrongChannel?: string,
+    }
 }
