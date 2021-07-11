@@ -1,6 +1,6 @@
 {
   "name": "dsc.cmds",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A slash command handler for discord.js bots",
   "main": "lib/Handler.js",
   "types": "lib/Handler.d.ts",
