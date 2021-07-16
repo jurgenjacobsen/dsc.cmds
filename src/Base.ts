@@ -1,6 +1,6 @@
-import { Collection, Snowflake } from "discord.js";
 import EventEmitter from "events";
-import { CommandOptions, HandlerOptions, CommandExecute } from "./CommandHandler";
+import { CommandOptions, HandlerOptions, CommandExecute, Snowflake } from "./CommandHandler";
+
 
 export class Base extends EventEmitter {
     private _commands: Commands;
@@ -8,8 +8,8 @@ export class Base extends EventEmitter {
     public options: HandlerOptions;
     constructor(opt: HandlerOptions) {
         super();
-        this._commands = new Collection();
-        this.cooldowns = new Collection();
+        this._commands = new Map();
+        this.cooldowns = new Map();
         this.options = {
             commandsDir: opt.commandsDir,
             errorMessageEph: typeof opt.errorMessageEph === "boolean" ? opt.errorMessageEph : false,
@@ -87,6 +87,6 @@ export class Command {
     }
 }
 
-export type Cooldowns = Collection<string, number>;
-export type Commands = Collection<CommandName, Command>;
+export type Cooldowns = Map<string, number>;
+export type Commands = Map<CommandName, Command>;
 export type CommandName = string;

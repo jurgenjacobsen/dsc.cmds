@@ -1,16 +1,15 @@
-import { Client, CommandInteraction, Interaction, Snowflake } from "discord.js";
 import { Base, Command } from "./Base";
 import { readdirSync } from "fs";
 
 export class CommandHandler extends Base {
-    public bot: Client | any;
-    constructor(bot: Client | any, options: HandlerOptions) {
+    public bot: any;
+    constructor(bot: any, options: HandlerOptions) {
         super(options);
         this.bot = bot;
         this.load();
     }
 
-    public async interaction(i: Interaction): Promise<boolean> {
+    public async interaction(i: any ): Promise<boolean> {
         if(!i.isCommand()) return false;
         const command: Command = this.commands.get(i.commandName) as Command || this.commands.get(i.commandId) as Command;
         if(!command) return this.emit("error", `${i.commandName} not found on my command list!`);
@@ -28,7 +27,7 @@ export class CommandHandler extends Base {
         }
     }
 
-    public run(command: Command, bot: Client | any, interaction: CommandInteraction): any | void | boolean {
+    public run(command: Command, bot: any, interaction: any): any | void | boolean {
         let cooldownKey = `${command.name}_${interaction.user.id}`;
 
         if(this.cooldowns.has(cooldownKey)) {
@@ -42,7 +41,7 @@ export class CommandHandler extends Base {
         if(command.staffOnly) {
             if(!command.guildOnly) throw new Error("StaffOnly command should be also set to be GuildOnly!");
             if(!interaction.guild) return interaction.reply({content: this.options.errorMessages?.guildOnly, ephemeral: this.options.errorMessageEph});
-            interaction.guild.members.fetch(interaction.user.id).then((member) => {
+            interaction.guild.members.fetch(interaction.user.id).then((member: any) => {
                 if(!this.options.staffRoles?.includes(member.roles.highest.id)) {
                     return interaction.reply({ content: this.options.errorMessages?.staffOnly, ephemeral: this.options.errorMessageEph })
                 }
@@ -72,7 +71,7 @@ export class CommandHandler extends Base {
 }
 
 export interface CommandExecute {
-    (bot: Client | any, interaction: CommandInteraction): Promise<void | any | undefined | null>;
+    (bot: any, interaction: any): Promise<void | any | undefined | null>;
 }
 
 export interface CommandOptions {
@@ -101,3 +100,5 @@ export interface HandlerOptions {
         wrongChannel?: string,
     }
 }
+
+export type Snowflake = `${bigint}`;
