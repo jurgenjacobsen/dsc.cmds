@@ -5,7 +5,7 @@
   "main": "lib/CommandHandler.js",
   "types": "lib/CommandHandler.d.ts",
   "repository": {
-    "url": ""
+    "url": "https://github.com/jurgenjacobsen/dsc.cmds"
   },
   "scripts": {
     "build": "tsc"
