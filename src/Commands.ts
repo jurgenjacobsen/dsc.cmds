@@ -2,7 +2,7 @@ import { Base, Command } from "./Base";
 import { readdirSync } from "fs";
 import { CommandInteraction, ContextMenuInteraction, Interaction } from "discord.js";
 
-export class CommandHandler extends Base {
+export class Commands extends Base {
     public bot: any;
     public commandsDir: string;
     constructor(bot: any, commandsDir: string, options: HandlerOptions) {
