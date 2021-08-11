@@ -80,7 +80,7 @@ export class Commands extends Base {
 }
 
 export interface CommandExecute {
-    (bot: any, interaction: ContextMenuInteraction | CommandInteraction): Promise<void | any>;
+    (bot: any, interaction: any): Promise<void | any>;
 }
 
 export interface CommandOptions {
