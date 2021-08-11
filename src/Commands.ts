@@ -1,28 +1,37 @@
 import { Base, Command } from "./Base";
 import { readdirSync } from "fs";
+import { CommandInteraction, ContextMenuInteraction, Interaction } from "discord.js";
 
 export class CommandHandler extends Base {
     public bot: any;
-    constructor(bot: any, options: HandlerOptions) {
+    public commandsDir: string;
+    constructor(bot: any, commandsDir: string, options: HandlerOptions) {
         super(options);
         this.bot = bot;
+        this.commandsDir = commandsDir;
         this.load();
     }
 
-    public async interaction(i: any ): Promise<boolean> {
-        if(!i.isCommand()) return false;
-        const command: Command = this.commands.get(i.commandName) as Command || this.commands.get(i.commandId) as Command;
+    public async interaction(i: Interaction): Promise<boolean> {
+        if(!i.isCommand() && !i.isContextMenu()) return false;
+
+        const command = this.commands.find((c) => c.name.toLowerCase() === i.commandName.toLowerCase()) || this.commands.get(i.commandId);
         if(!command) return this.emit("error", `${i.commandName} not found on my command list!`);
 
         this.emit("debug", `Running command ${i.commandName}...`);
 
-        this.run(command, this.bot, i)
+        if(command.ctxMenuCommand && !i.isContextMenu()) {
+            this.emit("debug", `Tried to run command ${i.commandName} but you configured it to be context menu only.`)
+            return false;
+        }
+
+        this.run(command, this.bot, i);
         return true;
     }
 
     private async load() {
-        for(const file of readdirSync(this.options.commandsDir)) {
-            const { command } = require(`${this.options.commandsDir}/${file}`);
+        for(let file of readdirSync(this.commandsDir)) {
+            let { command } = require(`${this.commandsDir}/${file}`);
             this.add(command);
         }
     }
@@ -71,24 +80,24 @@ export class CommandHandler extends Base {
 }
 
 export interface CommandExecute {
-    (bot: any, interaction: any): Promise<void | any | undefined | null>;
+    (bot: any, interaction: ContextMenuInteraction | CommandInteraction): Promise<void | any>;
 }
 
 export interface CommandOptions {
-    name: string,
-    guildOnly?: boolean,
-    staffOnly?: boolean,
-    developerOnly?: boolean,
-    allowedChannels?: Snowflake[],
-    deniedChannels?: Snowflake[],
-    cooldown?: number,
-    ephemeral?: boolean,
-    maintence?: boolean,
-    execute: CommandExecute,
+    name: string;
+    guildOnly?: boolean;
+    staffOnly?: boolean;
+    developerOnly?: boolean;
+    allowedChannels?: Snowflake[];
+    deniedChannels?: Snowflake[];
+    cooldown?: number;
+    ephemeral?: boolean;
+    maintence?: boolean;
+    ctxMenuCommand?: boolean;
+    execute: CommandExecute;
 }
 
 export interface HandlerOptions {
-    commandsDir: string,
     errorMessageEph?: boolean,
     staffRoles?: Snowflake[],
     developersIDs?: Snowflake[],

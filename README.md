@@ -3,9 +3,11 @@ A simple and easy to use Discord.js slash command handler.
 
 `npm i dsc.cmds`
 
-> **DISCLAIMER** *This will only work with discord.js version 13.0 or later*
+> **DISCLAIMER** *This will only work with discord.js version 13.1 or later*
 
-### Example
+#### [Support](https://discord.gg/GtaxXxNYaD)
+
+### Examples
 Here's two examples of how you can use the Handler one in Javascript and one 'advanced' in Typescript.
 
 #### Javascript
@@ -15,12 +17,11 @@ Here's two examples of how you can use the Handler one in Javascript and one 'ad
     const path = require("path");
 
     const bot = new Client();
-    const handler = new CommandHandler(bot, {
-        commandsDir: path.join(__dirname, "./commands") // The directory where the commands are located
-        staffRoles: ["123456789012345678"] // The roles for the 'staffOnly' option on the commands
-        developersIDs: ["123456789012345678"] // The IDs for the 'developerOnly' option on the commands
-        errorMessageEph: false, // If the error messages should be ephemeral or not
-        errorMessages: { // Here you customize the error messages
+    const handler = new CommandHandler(bot, path.join(__dirname, "./commands"), {
+        staffRoles: ["123456789012345678"] // The roles for the 'staffOnly' option on the commands - OPTIONAL
+        developersIDs: ["123456789012345678"] // The IDs for the 'developerOnly' option on the commands - OPTIONAL
+        errorMessageEph: false, // If the error messages should be ephemeral or not - OPTIONAL
+        errorMessages: { // Here you customize the error messages - OPTIONAL
             cooldown: `You should wait to use this command again!`,
             guildOnly: `This command is only allowed inside guilds!`,
             staffOnly: `This command is only for staff!`,
@@ -47,12 +48,11 @@ Here's two examples of how you can use the Handler one in Javascript and one 'ad
         constructor(options) {
             super(options);
 
-            this.handler = new CommandHandler(this, {
-                commandsDir: path.join(__dirname, "./commands") // The directory where the commands are located
-                staffRoles: ["123456789012345678"] // The roles for the 'staffOnly' option on the commands
-                developersIDs: ["123456789012345678"] // The IDs for the 'developerOnly' option on the commands
-                errorMessageEph: false, // If the error messages should be ephemeral or not
-                errorMessages: { // Here you customize the error messages
+            this.handler = new CommandHandler(this, path.join(__dirname, "./commands"), {
+                staffRoles: ["123456789012345678"] // The roles for the 'staffOnly' option on the commands - OPTIONAL
+                developersIDs: ["123456789012345678"] // The IDs for the 'developerOnly' option on the commands - OPTIONAL
+                errorMessageEph: false, // If the error messages should be ephemeral or not - OPTIONAL
+                errorMessages: { // Here you customize the error messages - OPTIONAL
                     cooldown: `You should wait to use this command again!`,
                     guildOnly: `This command is only allowed inside guilds!`,
                     staffOnly: `This command is only for staff!`,

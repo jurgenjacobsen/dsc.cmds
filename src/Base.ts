@@ -1,5 +1,6 @@
+import { Collection } from "discord.js";
 import EventEmitter from "events";
-import { CommandOptions, HandlerOptions, CommandExecute, Snowflake } from "./CommandHandler";
+import { CommandOptions, HandlerOptions, CommandExecute, Snowflake } from "./Commands";
 
 
 export class Base extends EventEmitter {
@@ -8,10 +9,9 @@ export class Base extends EventEmitter {
     public options: HandlerOptions;
     constructor(opt: HandlerOptions) {
         super();
-        this._commands = new Map();
-        this.cooldowns = new Map();
+        this._commands = new Collection();
+        this.cooldowns = new Collection();
         this.options = {
-            commandsDir: opt.commandsDir,
             errorMessageEph: typeof opt.errorMessageEph === "boolean" ? opt.errorMessageEph : false,
             staffRoles: Array.isArray(opt.staffRoles) ? opt.staffRoles : [],
             developersIDs: Array.isArray(opt.developersIDs) ? opt.developersIDs : [],
@@ -70,6 +70,7 @@ export class Command {
     public cooldown?: number;
     public ephemeral?: boolean;
     public maintence?: boolean;
+    public ctxMenuCommand?: boolean;
     public execute: CommandExecute;
     constructor(options: CommandOptions) {
         if(typeof options.name !== "string") throw new Error(`Command name should but type string, received: ${typeof options.name}`);
@@ -83,10 +84,11 @@ export class Command {
         this.cooldown = typeof options.cooldown === "number" ? options.cooldown : 0;
         this.ephemeral = typeof options.ephemeral === "boolean" ? options.ephemeral : false;
         this.maintence = typeof options.maintence === "boolean" ? options.maintence : false;
+        this.ctxMenuCommand = typeof options.ctxMenuCommand === "boolean" ? options.ctxMenuCommand : false;
         this.execute = options.execute;
     }
 }
 
 export type Cooldowns = Map<string, number>;
-export type Commands = Map<CommandName, Command>;
+export type Commands = Collection<CommandName, Command>;
 export type CommandName = string;
