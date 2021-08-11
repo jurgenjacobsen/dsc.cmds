@@ -12,12 +12,12 @@ Here's two examples of how you can use the Handler one in Javascript and one 'ad
 
 #### Javascript
 ```js
-    const { CommandHandler } = require("dsc.cmds");
+    const { Commands } = require("dsc.cmds");
     const { Client } = require("discord.js");
     const path = require("path");
 
     const bot = new Client();
-    const handler = new CommandHandler(bot, path.join(__dirname, "./commands"), {
+    const handler = new Commands(bot, path.join(__dirname, "./commands"), {
         staffRoles: ["123456789012345678"] // The roles for the 'staffOnly' option on the commands - OPTIONAL
         developersIDs: ["123456789012345678"] // The IDs for the 'developerOnly' option on the commands - OPTIONAL
         errorMessageEph: false, // If the error messages should be ephemeral or not - OPTIONAL
@@ -39,16 +39,16 @@ Here's two examples of how you can use the Handler one in Javascript and one 'ad
 
 #### Typescript
 ```ts
-    import { CommandHandler } from "dsc.cmds";
+    import { Commands } from "dsc.cmds";
     import { Client } from "discord.js";
     import { join } from "path";
 
     class Bot extends Client {
-        public handler: CommandHandler;
+        public handler: Commands;
         constructor(options) {
             super(options);
 
-            this.handler = new CommandHandler(this, path.join(__dirname, "./commands"), {
+            this.handler = new Commands(this, path.join(__dirname, "./commands"), {
                 staffRoles: ["123456789012345678"] // The roles for the 'staffOnly' option on the commands - OPTIONAL
                 developersIDs: ["123456789012345678"] // The IDs for the 'developerOnly' option on the commands - OPTIONAL
                 errorMessageEph: false, // If the error messages should be ephemeral or not - OPTIONAL
