@@ -1,14 +1,14 @@
 {
   "name": "dsc.cmds",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "A slash command and context menu commands handler for Discord.js bots",
-  "main": "lib/Commands.js",
-  "types": "lib/Commands.d.ts",
-  "directories": {
-    "lib": "lib"
-  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docs": "typedoc --theme minimal --out docs src/",
+    "pretty": "prettier --config .prettierrc \"./src/**/*.ts\"  \"./lib/**/*.js\" --write",
+    "tsc": "tsc",
+    "build": "npm run tsc && npm run pretty && npm run docs"
   },
   "repository": {
     "type": "git",
@@ -24,16 +24,23 @@
     "menu"
   ],
   "author": "jurgenjacobsen",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/jurgenjacobsen/dsc.cmds/issues"
   },
+  "engines": {
+    "node": ">=16.6.0",
+    "npm": ">=7.0.0"
+  },
   "homepage": "https://github.com/jurgenjacobsen/dsc.cmds#readme",
   "dependencies": {
-    "discord.js": "^13.1.0-dev.1628683680.75b48d8",
+    "discord.js": "^13.1.0",
     "events": "^3.3.0"
   },
   "devDependencies": {
+    "path": "^0.12.7",
+    "prettier": "^2.3.2",
+    "typedoc": "^0.21.6",
     "typescript": "^4.3.5"
   }
 }
