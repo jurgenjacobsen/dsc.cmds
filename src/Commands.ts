@@ -21,21 +21,27 @@ export class Commands extends Base {
 
     super(opts);
 
-    this.options.bot.on('interactionCreate', this.handle);
+    this.options.bot.on('interactionCreate', (i) => {
+      this.handle(i);
+    });
   }
 
   private handle(i: Interaction): void {
     if (!i.isCommand() && !i.isContextMenu()) return;
 
-    let cmd = this.commands.get(i.commandName) || this.commands.get(i.commandId);
+    let cmd =
+      this.cache.get(i.commandName) ||
+      this.cache.get(i.commandId) ||
+      this.cache.find((c) => c.id === i.commandId) ||
+      this.cache.find((c) => c.name?.toLowerCase() === i.commandName.toLowerCase());
 
     if (!cmd) {
-      this.emit('debug', `Command: ${i.commandName} (${i.commandId}) not found!`);
+      this.debug(`Command: ${i.commandName} (${i.commandId}) not found!`);
       return;
     }
 
     if (i.replied) {
-      this.emit('debug', `This interaction was already replied, skipping...`);
+      this.debug(`This interaction was already replied, skipping...`);
       return;
     }
 
@@ -47,7 +53,7 @@ export class Commands extends Base {
     }
 
     if (cmd.context && !i.isContextMenu()) {
-      this.emit('debug', `Tried to run command ${i.commandName} but you configured it to be context menu only.`);
+      this.debug(`Tried to run command ${i.commandName} but you configured it to be context menu only.`);
       return;
     }
 
@@ -61,8 +67,14 @@ export class Commands extends Base {
       return;
     }
 
-    if (cmd.channels?.allowed || cmd.channels?.blocked) {
-      if (!cmd.channels.allowed?.includes(i.channelId) || cmd.channels.blocked?.includes(i.channelId)) {
+    if (cmd.channels?.allowed && cmd.channels.allowed.length > 0) {
+      if (!cmd.channels.allowed?.includes(i.channelId)) {
+        i.reply({ content: this.options.msgs?.channel, ephemeral: true });
+        return;
+      }
+    }
+    if (cmd.channels?.blocked && cmd.channels.blocked.length > 0) {
+      if (cmd.channels.blocked.includes(i.channelId)) {
         i.reply({ content: this.options.msgs?.channel, ephemeral: true });
         return;
       }
@@ -72,7 +84,7 @@ export class Commands extends Base {
 
     cmd.run(this.options.bot, i, this.options.args);
 
-    this.emit('debug', `Someone used command: ${i.commandName} (${i.commandId})`);
+    this.debug(`Someone used command: ${i.commandName} (${i.commandId})`);
 
     return;
   }
@@ -83,6 +95,8 @@ export interface HandlerOptions {
   bot: Client;
   /** The directory where your commands are located */
   dir: string;
+  /** Debug Mode */
+  debug?: boolean;
   /** If the command error messages should or not be ephemeral (Only visible for the user) */
   eph?: boolean;
   /** The bot developers' ids for devOnly command (Optional) */
