@@ -1,4 +1,3 @@
-import { Collection, Interaction } from 'discord.js';
 import { EventEmitter } from 'events';
 import { Command } from './Command';
 import { HandlerOptions } from './Commands';
@@ -10,8 +9,8 @@ export class Base extends EventEmitter {
   constructor(options: HandlerOptions) {
     super();
 
-    this.commands = new Collection();
-    this.cooldowns = new Collection();
+    this.commands = new Map();
+    this.cooldowns = new Map();
 
     this.options = options;
 
@@ -60,5 +59,5 @@ export class Base extends EventEmitter {
   }
 }
 
-export type CommandList = Collection<string, Command>;
-export type Cooldowns = Collection<string, number>;
+export type CommandList = Map<string, Command>;
+export type Cooldowns = Map<string, number>;

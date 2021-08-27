@@ -27,11 +27,7 @@ export class Commands extends Base {
   private handle(i: Interaction): void {
     if (!i.isCommand() && !i.isContextMenu()) return;
 
-    let cmd =
-      this.commands.find((cmd) => cmd.name?.toLowerCase() === i.commandName.toLowerCase()) ||
-      this.commands.find((cmd) => cmd.id === i.commandId) ||
-      this.commands.get(i.commandName) ||
-      this.commands.get(i.commandId);
+    let cmd = this.commands.get(i.commandName) || this.commands.get(i.commandId);
 
     if (!cmd) {
       this.emit('debug', `Command: ${i.commandName} (${i.commandId}) not found!`);
