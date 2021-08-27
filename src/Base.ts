@@ -4,22 +4,18 @@ import { Command } from './Command';
 import { HandlerOptions } from './Commands';
 import { readdirSync } from 'fs';
 export class Base extends EventEmitter {
-  private _commands: CommandList;
   public cooldowns: Cooldowns;
+  public commands: CommandList;
   public options: HandlerOptions;
   constructor(options: HandlerOptions) {
     super();
 
-    this._commands = new Collection();
+    this.commands = new Collection();
     this.cooldowns = new Collection();
 
     this.options = options;
 
     this.load();
-  }
-
-  public get commands(): CommandList {
-    return this._commands;
   }
 
   public load() {
