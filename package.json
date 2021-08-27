@@ -1,6 +1,6 @@
 {
   "name": "dsc.cmds",
-  "version": "2.0.1-dev.3",
+  "version": "2.0.2",
   "description": "A slash command and context menu commands handler for Discord.js bots",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
