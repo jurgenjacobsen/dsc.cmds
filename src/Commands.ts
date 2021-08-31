@@ -22,71 +22,65 @@ export class Commands extends Base {
     super(opts);
 
     this.options.bot.on('interactionCreate', (i) => {
-      this.handle(i);
+      if (!i.isCommand() && !i.isContextMenu()) return;
+
+      let cmd =
+        this.cache.get(i.commandName) ||
+        this.cache.get(i.commandId) ||
+        this.cache.find((c) => c.id === i.commandId) ||
+        this.cache.find((c) => c.name?.toLowerCase() === i.commandName.toLowerCase());
+
+      if (!cmd) {
+        this.debug(`Command: ${i.commandName} (${i.commandId}) not found!`);
+        return;
+      }
+
+      if (i.replied) {
+        this.debug(`This interaction was already replied, skipping...`);
+        return;
+      }
+
+      let ckey = `${i.commandId}_${i.guildId ?? '0'}_${i.user.id}`;
+
+      if (this.cooldowns.has(ckey)) {
+        i.reply({ content: this.options.msgs?.cooldown, ephemeral: this.options.eph });
+        return;
+      }
+
+      if (cmd.context && !i.isContextMenu()) {
+        this.debug(`Tried to run command ${i.commandName} but you configured it to be context menu only.`);
+        return;
+      }
+
+      if (cmd.guildOnly && !i.guildId) {
+        i.reply({ content: this.options.msgs?.guildOnly, ephemeral: this.options.eph });
+        return;
+      }
+
+      if (cmd.devOnly && !this.options.devs?.includes(i.user.id)) {
+        i.reply({ content: this.options.msgs?.devOnly, ephemeral: this.options.eph });
+        return;
+      }
+
+      if (cmd.channels?.allowed && cmd.channels.allowed.length > 0) {
+        if (!cmd.channels.allowed?.includes(i.channelId)) {
+          i.reply({ content: this.options.msgs?.channel, ephemeral: true });
+          return;
+        }
+      }
+      if (cmd.channels?.blocked && cmd.channels.blocked.length > 0) {
+        if (cmd.channels.blocked.includes(i.channelId)) {
+          i.reply({ content: this.options.msgs?.channel, ephemeral: true });
+          return;
+        }
+      }
+
+      cmd.run(this.options.bot, i, this.options.args);
+
+      this.cooldown(ckey, cmd.cooldown || 0);
+
+      this.debug(`Someone used command: ${i.commandName} (${i.commandId})`);
     });
-  }
-
-  private handle(i: Interaction): void {
-    if (!i.isCommand() && !i.isContextMenu()) return;
-
-    let cmd =
-      this.cache.get(i.commandName) ||
-      this.cache.get(i.commandId) ||
-      this.cache.find((c) => c.id === i.commandId) ||
-      this.cache.find((c) => c.name?.toLowerCase() === i.commandName.toLowerCase());
-
-    if (!cmd) {
-      this.debug(`Command: ${i.commandName} (${i.commandId}) not found!`);
-      return;
-    }
-
-    if (i.replied) {
-      this.debug(`This interaction was already replied, skipping...`);
-      return;
-    }
-
-    let ckey = `${i.commandId}_${i.guildId ?? '0'}_${i.user.id}`;
-
-    if (this.cooldowns.has(ckey)) {
-      i.reply({ content: this.options.msgs?.cooldown, ephemeral: this.options.eph });
-      return;
-    }
-
-    if (cmd.context && !i.isContextMenu()) {
-      this.debug(`Tried to run command ${i.commandName} but you configured it to be context menu only.`);
-      return;
-    }
-
-    if (cmd.guildOnly && !i.guildId) {
-      i.reply({ content: this.options.msgs?.guildOnly, ephemeral: this.options.eph });
-      return;
-    }
-
-    if (cmd.devOnly && !this.options.devs?.includes(i.user.id)) {
-      i.reply({ content: this.options.msgs?.devOnly, ephemeral: this.options.eph });
-      return;
-    }
-
-    if (cmd.channels?.allowed && cmd.channels.allowed.length > 0) {
-      if (!cmd.channels.allowed?.includes(i.channelId)) {
-        i.reply({ content: this.options.msgs?.channel, ephemeral: true });
-        return;
-      }
-    }
-    if (cmd.channels?.blocked && cmd.channels.blocked.length > 0) {
-      if (cmd.channels.blocked.includes(i.channelId)) {
-        i.reply({ content: this.options.msgs?.channel, ephemeral: true });
-        return;
-      }
-    }
-
-    this.cooldown(ckey, cmd.cooldown || 0);
-
-    cmd.run(this.options.bot, i, this.options.args);
-
-    this.debug(`Someone used command: ${i.commandName} (${i.commandId})`);
-
-    return;
   }
 }
 

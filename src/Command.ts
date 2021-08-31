@@ -20,6 +20,10 @@ export class Command {
       this.id = payload.id;
     }
 
+    if (!this.id && !this.name) {
+      throw new Error('You should provide at least a name or id to the command.');
+    }
+
     if (typeof payload.run !== 'function') {
       throw new Error('Run property should be a function');
     }
