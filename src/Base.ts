@@ -15,9 +15,9 @@ export class Base {
     this.load();
   }
 
-  public debug(...args: any) {
-    if (this.options.debug) {
-      return console.log(...args);
+  public debug(text: string | number) {
+    if (this.options.debug === true) {
+      return console.log(text);
     }
   }
 
