@@ -62,6 +62,8 @@ export class Base {
         console.error(error);
       }
     }
+
+    this.debug(`Loaded ${this.list.size} commands`);
   }
 
   public add(cmd: Command): Command | void {
