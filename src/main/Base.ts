@@ -32,21 +32,23 @@ export class Base {
 
     for (const file of files) {
       const filePath = path.join(commandsPath, file);
-      const command: Command | undefined = require(filePath);
+      let command = require(filePath);
+
+      command = command?.default || command?.command || command?.cmd || command;
 
       if (command && 'data' in command && 'execute' in command) {
         this.add(command);
         this.raw.push(command.data.toJSON());
       } else {
-        this.debug(`All commands should have a 'data' and 'execute' properties!`);
+        this.debug(`Command ${file} should have a 'data' and 'execute' properties!`);
       }
     }
 
     if (this.options.deployCommandsOnLoad && this.raw) {
       this.debug(`'Deploy Command on Load' options is activated, deploying...`);
 
-      if (typeof this.options?.clientId !== 'string') throw '';
-      if (typeof this.options?.clientToken !== 'string') throw '';
+      if (typeof this.options?.clientId !== 'string') throw "To deploy commands through the manager you need to input your bot's clientId on the manager options";
+      if (typeof this.options?.clientToken !== 'string') throw "To deploy commands through the manager you need to input your bot's clientToken on the manager options";
 
       const rest = new REST({ version: '10' }).setToken(this.options.clientToken);
 
