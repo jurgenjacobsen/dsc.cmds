@@ -12,7 +12,7 @@ export class Command {
 }
 
 export interface CommandRun {
-  (cm: CommandsManager, bot: Client, interaction: CommandInteraction): Promise<any> | any;
+  (cm: CommandsManager, bot: Client | any, interaction: CommandInteraction): Promise<any> | any;
 }
 
 export interface CommandOptions {
